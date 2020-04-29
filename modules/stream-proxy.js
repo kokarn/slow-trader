@@ -36,11 +36,11 @@ module.exports = {
         return true;
     },
     clear(){
-        for(const instrumentId of handlers){
+        for(const instrumentId in handlers){
             Reflect.deleteProperty(handlers, instrumentId);
         }
         
-        for(const instrumentId of streams){
+        for(const instrumentId in streams){
             Reflect.deleteProperty(streams, instrumentId);
         }
         
