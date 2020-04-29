@@ -41,8 +41,6 @@ const start = async function start(){
         return false;
     }
     
-    cache.set('lastRun', new Date());
-    
     let accountOverview;
     try {
         accountOverview = await avanza.getOverview();
@@ -113,6 +111,8 @@ const stop = function stop(){
         
         return false;
     }
+    
+    cache.set('lastRun', new Date());
     
     if(isOpen()){
         start();
