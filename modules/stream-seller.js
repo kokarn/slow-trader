@@ -70,7 +70,7 @@ module.exports = async function seller(avanza, instrumentId, instrumentName){
         try {
             await notifyy.send( {
                 message: '```' + JSON.stringify(order, null, 4) + '```',
-                title: `New sell order for ${orderbookData.orderbook.name} posted`,
+                title: `New sell order for ${instrumentOwnership.name} posted`,
                 cache: 'false',
             } );
         } catch (notifyyError){
