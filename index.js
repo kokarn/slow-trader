@@ -29,6 +29,7 @@ if(!cron.validate(STOP_CRON_STRING)){
 }
 
 const start = async function start(){
+    console.log(new Date());
     console.log('Starting');
     
     try {
@@ -103,6 +104,7 @@ const start = async function start(){
 };
 
 const stop = function stop(){
+    console.log(new Date());
     console.log('Stopping');
     
     streamProxy.clear();
