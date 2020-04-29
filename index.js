@@ -5,49 +5,18 @@ require('dotenv').config();
 
 const Avanza = require('avanza');
 const chalk = require('chalk');
-const isWeekend = require('date-fns/isWeekend');
-const set = require('date-fns/set');
-const isBefore = require('date-fns/isBefore');
-const isAfter = require('date-fns/isAfter');
 
 const cache = require('./modules/cache');
 const buyer = require('./buyer');
 const seller = require('./seller');
+const isOpen = require('./modules/is-open');
 
 const MIN_RUN_INTERVAL = 15000;
 
 const avanza = new Avanza();
 
 const doWork = async function doWork(avanza){
-    const now = new Date();
-    const open = set(new Date(), {
-        hours: 7,
-        minutes: 0,
-        seconds: 0,
-        milliseconds: 0,
-    });
-    const close = set(new Date(), {
-        hours: 15,
-        minutes: 30,
-        seconds: 0,
-        milliseconds: 0,
-    });
-    
-    if(isWeekend(now)){
-        console.log(`It's weekend, let's not run anything`);
-        
-        return false;
-    }
-    
-    if(isBefore(now, open)){
-        console.log(`It's before opening, let's not run anything`);
-        
-        return false;
-    }
-    
-    if(isAfter(now, close)){
-        console.log(`It's after closing, let's not run anything`);
-        
+    if(!isOpen()){
         return false;
     }
     
