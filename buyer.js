@@ -15,7 +15,6 @@ module.exports = async function buyer(avanza){
     console.log('Running buyer');
     
     let buyTarget = false;
-    
     try {
         buyTarget = await targetFinder(avanza);
     } catch (buyTargetError){
@@ -26,6 +25,15 @@ module.exports = async function buyer(avanza){
         console.error(`Found no buying target`);
         
         return true;
+    }
+    
+    let positions;
+    try {
+        positions = await avanza.getPositions();
+    } catch (overviewError){
+        console.error(overviewError);
+        
+        return false;
     }
     
     console.log(chalk.green(`Found a buying target`));
