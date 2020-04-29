@@ -15,6 +15,7 @@ const START_CRON_STRING = '55 8 * * Monday,Tuesday,Wednesday,Thursday,Friday';
 const STOP_CRON_STRING = '35 17 * * Monday,Tuesday,Wednesday,Thursday,Friday';
 
 const avanza = new Avanza();
+let buyInterval = false;
 
 if(!cron.validate(START_CRON_STRING)){
     console.error(`"${START_CRON_STRING}" is not a valid cron string, exiting`);
@@ -94,11 +95,16 @@ const start = async function start(){
         
         streamSeller(avanza, position.orderbookId, position.name);
     }
+    
+    buyInterval = setInterval(() => {
+        buyer(avanza);
+    }, 590000);
 };
 
 const stop = function stop(){
     console.log('Stopping');
     
+    clearInterval(buyInterval);
     avanza.disconnect();
 };
 
