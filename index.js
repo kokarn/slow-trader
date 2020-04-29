@@ -64,14 +64,14 @@ const start = async function start(){
         console.log('Got a deal event');
         console.log(JSON.stringify(dealEvent, null, 4));
         
-        if(dealEvent.orderType === 'Sälj'){
+        if(dealEvent.deals[0].orderType === 'Sälj'){
             // We've sold something, let's buy something new
             buyer(avanza);
-        } else if (dealEvent.orderType === 'Köp'){
+        } else if (dealEvent.deals[0].orderType === 'Köp'){
             // We've bought something, let's sell it
-            streamSeller(avanza, dealEvent.orderbook.id, dealEvent.orderbook.name);
+            streamSeller(avanza, dealEvent.deals[0].orderbook.id, dealEvent.deals[0].orderbook.name);
         } else {
-            console.error(`Unknown event type ${dealEvent.orderType}`);
+            console.error(`Unknown event type ${dealEvent.deals[0].orderType}`);
         }
     });    
     
@@ -123,6 +123,7 @@ const stop = function stop(){
     }
     
     cache.set('lastRun', new Date());
+
     
     if(isOpen()){
         start();
