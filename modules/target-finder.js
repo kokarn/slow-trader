@@ -58,7 +58,7 @@ module.exports = async function targetFinder(avanza){
             continue;
         }
         
-        if(positionOverview.includes(stock.orderbookId)){
+        if(positionOverview.includes(stock.id)){
             console.log(chalk.yellow(`Already have ${stock.name}, skipping`));
             
             continue;
