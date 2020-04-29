@@ -35,4 +35,15 @@ module.exports = {
         
         return true;
     },
+    clear(){
+        for(const instrumentId of handlers){
+            Reflect.deleteProperty(handlers, instrumentId);
+        }
+        
+        for(const instrumentId of streams){
+            Reflect.deleteProperty(streams, instrumentId);
+        }
+        
+        return true;
+    },
 };

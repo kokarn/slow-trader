@@ -9,6 +9,7 @@ const cache = require('./modules/cache');
 const buyer = require('./buyer');
 const isOpen = require('./modules/is-open');
 const streamSeller = require('./modules/stream-seller');
+const streamProxy = require('./modules/stream-proxy');
 
 const MIN_RUN_INTERVAL = 15000;
 const START_CRON_STRING = '55 8 * * Monday,Tuesday,Wednesday,Thursday,Friday';
@@ -104,6 +105,7 @@ const start = async function start(){
 const stop = function stop(){
     console.log('Stopping');
     
+    streamProxy.clear();
     clearInterval(buyInterval);
     avanza.disconnect();
 };
