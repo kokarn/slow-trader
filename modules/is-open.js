@@ -2,6 +2,7 @@ const isWeekend = require('date-fns/isWeekend');
 const set = require('date-fns/set');
 const isBefore = require('date-fns/isBefore');
 const isAfter = require('date-fns/isAfter');
+const swedishHoliday = require('swedish-holidays');
 
 module.exports = () => {
     const now = new Date();
@@ -18,20 +19,26 @@ module.exports = () => {
         milliseconds: 0,
     });
     
+    if(swedishHoliday.isHoliday()){
+        console.log(`Today is a swedish holiday, it's not open`);
+        
+        return false;
+    }
+    
     if(isWeekend(now)){
-        console.log(`It's weekend, let's not run anything`);
+        console.log(`It's weekend, it's not open`);
         
         return false;
     }
     
     if(isBefore(now, open)){
-        console.log(`It's before opening, let's not run anything`);
+        console.log(`It's before opening, it's not open`);
         
         return false;
     }
     
     if(isAfter(now, close)){
-        console.log(`It's after closing, let's not run anything`);
+        console.log(`It's after closing, it's not open`);
         
         return false;
     }

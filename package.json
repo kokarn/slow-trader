@@ -18,7 +18,9 @@
     "chalk": "^4.0.0",
     "date-fns": "^2.12.0",
     "dotenv": "^8.2.0",
-    "log-timestamp": "^0.3.0",
-    "node-notifyy": "^3.1.0"
+    "node-cron": "^2.0.3",
+    "node-notifyy": "^3.1.0",
+    "swedish-holidays": "^0.1.5",
+    "uuid": "^7.0.3"
   }
 }
