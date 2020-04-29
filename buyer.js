@@ -1,3 +1,4 @@
+const Avanza = require('avanza');
 const Notifyy = require('node-notifyy');
 const chalk = require('chalk');
 const startOfTomorrow = require('date-fns/startOfTomorrow');
@@ -57,7 +58,7 @@ module.exports = async function buyer(avanza){
     const order = {
         accountId: process.env.AVANZA_ISK_ID,
         orderbookId: buyTarget.id,
-        orderType: 'BUY',
+        orderType: Avanza.BUY,
         price: buyTarget.lastPrice,
         validUntil: format(startOfTomorrow(), 'yyyy-MM-dd'),
         volume: Math.floor(positions.totalBuyingPower / buyTarget.lastPrice),
