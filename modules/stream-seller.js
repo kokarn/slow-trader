@@ -70,7 +70,7 @@ module.exports = async function seller(avanza, instrumentId, instrumentName){
         streamProxy.pause(instrumentId, streamId);
         
         try {
-            await notifyy.send( {
+            notifyy.send( {
                 message: '```' + JSON.stringify(order, null, 4) + '```',
                 title: `New sell order for ${instrumentOwnership.name} posted`,
                 cache: 'false',
