@@ -5,8 +5,8 @@ const startOfTomorrow = require('date-fns/startOfTomorrow');
 const format = require('date-fns/format');
 const add = require('date-fns/add');
 
-const cache = require('./modules/cache');
-const targetFinder = require('./modules/target-finder');
+const cache = require('./cache');
+const targetFinder = require('./target-finder');
 
 const notifyy = new Notifyy( {
     users: 'QBfmptGTgQoOS2gGOobd5Olfp31hTKrG',
