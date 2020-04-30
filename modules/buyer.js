@@ -12,14 +12,15 @@ const notifyy = new Notifyy( {
     users: 'QBfmptGTgQoOS2gGOobd5Olfp31hTKrG',
 } );
 
-module.exports = async function buyer(avanza){
+module.exports = async function buyer(avanza, buyTarget = false){
     console.log('Running buyer');
     
-    let buyTarget = false;
-    try {
-        buyTarget = await targetFinder(avanza);
-    } catch (buyTargetError){
-        console.error(buyTargetError);
+    if(!buyTarget){
+        try {
+            buyTarget = await targetFinder(avanza);
+        } catch (buyTargetError){
+            console.error(buyTargetError);
+        }
     }
     
     if(!buyTarget){
@@ -39,21 +40,6 @@ module.exports = async function buyer(avanza){
     
     console.log(chalk.green(`Found a buying target`));
     console.log(JSON.stringify(buyTarget, null, 4 ));
-    /*
-    {
-        "priceThreeMonthsAgo": 18.13,
-        "currency": "SEK",
-        "priceOneYearAgo": 13.5,
-        "lastPrice": 16.08,
-        "change": 0.73,
-        "changePercent": 4.76,
-        "updated": "2020-04-22T17:11:11.000+0200",
-        "highlightValue": 28989,
-        "flagCode": "SE",
-        "name": "Fingerprint Cards B",
-        "id": "5468"
-    }
-    */
     
     const order = {
         accountId: process.env.AVANZA_ISK_ID,
