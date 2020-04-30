@@ -11,12 +11,18 @@ const isOpen = require('./modules/is-open');
 const streamSeller = require('./modules/stream-seller');
 const streamProxy = require('./modules/stream-proxy');
 
+const SellIndicator = require('./modules/buy-indicators/sell');
+const TimerIndicator = require('./modules/buy-indicators/timer');
+
 const MIN_RUN_INTERVAL = 15000;
 const START_CRON_STRING = '55 8 * * Monday,Tuesday,Wednesday,Thursday,Friday';
 const STOP_CRON_STRING = '35 17 * * Monday,Tuesday,Wednesday,Thursday,Friday';
 
 const avanza = new Avanza();
-let buyInterval = false;
+
+let buyEventHandler = false;
+let timerIndicator = false;
+let sellIndicator = false;
 
 if(!cron.validate(START_CRON_STRING)){
     console.error(`"${START_CRON_STRING}" is not a valid cron string, exiting`);
@@ -37,12 +43,14 @@ const start = async function start(){
             username: process.env.AVANZA_USERNAME,
             password: process.env.AVANZA_PASSWORD,
             totpSecret: process.env.AVANZA_TOTP_SECRET,
-          });
+        });
     } catch (authenticationError){
         console.error(authenticationError);
         
         return false;
     }
+    
+    buyEventHandler = buyer.bind(this, avanza);
     
     let accountOverview;
     try {
@@ -66,20 +74,20 @@ const start = async function start(){
         
         if(dealEvent.deals[0].orderType === 'Sälj'){
             // We've sold something, let's buy something new
-            buyer(avanza);
+            // buyer(avanza);
         } else if (dealEvent.deals[0].orderType === 'Köp'){
             // We've bought something, let's sell it
             streamSeller(avanza, dealEvent.deals[0].orderbook.id, dealEvent.deals[0].orderbook.name);
         } else {
             console.error(`Unknown event type ${dealEvent.deals[0].orderType}`);
         }
-    });    
-    
-    console.log('Setting up subscription for orders');
-    avanza.subscribe(Avanza.ORDERS, `_${accountsIds.join(',')}`, (orderEvent) => {
-        console.log('Got an order event');
-        console.log(JSON.stringify(orderEvent, null, 4));
     });
+    
+    sellIndicator = new SellIndicator(avanza);
+    timerIndicator = new TimerIndicator();
+    
+    sellIndicator.on('buy', buyEventHandler);
+    timerIndicator.on('buy', buyEventHandler);
     
     let positionOverview;
     try {
@@ -97,18 +105,15 @@ const start = async function start(){
         
         streamSeller(avanza, position.orderbookId, position.name);
     }
-    
-    buyInterval = setInterval(() => {
-        buyer(avanza);
-    }, 590000);
 };
 
 const stop = function stop(){
     console.log(new Date());
     console.log('Stopping');
     
+    sellIndicator.removeListener('buy', buyEventHandler);
+    timerIndicator.removeListener('buy', buyEventHandler);
     streamProxy.clear();
-    clearInterval(buyInterval);
     avanza.disconnect();
 };
 
@@ -123,7 +128,6 @@ const stop = function stop(){
     }
     
     cache.set('lastRun', new Date());
-
     
     if(isOpen()){
         start();
