@@ -67,6 +67,8 @@ module.exports = async function seller(avanza, instrumentId, instrumentName){
         console.log(chalk.green('Posting sell order'));
         console.log(order);
         
+        streamProxy.pause(instrumentId, streamId);
+        
         try {
             await notifyy.send( {
                 message: '```' + JSON.stringify(order, null, 4) + '```',
@@ -82,12 +84,14 @@ module.exports = async function seller(avanza, instrumentId, instrumentName){
             orderResponse = await avanza.placeOrder(order);
         } catch (orderError){
             console.error(orderError);
+            streamProxy.unpause(instrumentId, streamId);
             
             return false;
         }
         
         if(orderResponse.status === 'REJECTED'){
             console.error(orderResponse);
+            streamProxy.unpause(instrumentId, streamId);
             
             return true;
         }
@@ -102,6 +106,7 @@ module.exports = async function seller(avanza, instrumentId, instrumentName){
         });
         
         console.log(`Closing seller for ${instrumentName}`);
+        streamProxy.unpause(instrumentId, streamId);
         streamProxy.remove(instrumentId, streamId);
     });
 };
