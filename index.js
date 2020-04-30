@@ -6,7 +6,7 @@ const cron = require('node-cron');
 const swedishHoliday = require('swedish-holidays');
 
 const cache = require('./modules/cache');
-const buyer = require('./buyer');
+const buyer = require('./modules/buyer');
 const isOpen = require('./modules/is-open');
 const streamSeller = require('./modules/stream-seller');
 const streamProxy = require('./modules/stream-proxy');
