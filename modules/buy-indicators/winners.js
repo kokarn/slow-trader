@@ -20,7 +20,7 @@ class WinnersIndicator extends EventEmitter {
         this.setup();
     }
 
-    async getData (){
+    async getWinners (){
         let response;
         let winners = [];
         try {
@@ -54,7 +54,7 @@ class WinnersIndicator extends EventEmitter {
         let data = false;
         
         try {
-            data = await this.getData();
+            data = await this.getWinners();
         } catch (dataError){
             console.error(dataError);
             
@@ -74,11 +74,11 @@ class WinnersIndicator extends EventEmitter {
     }
     
     async updateData(){
-        let data = false;
+        let winners = false;
         const todayString = format(new Date(), 'yyyy-MM-dd');
         
         try {
-            data = await this.getData();
+            winners = await this.getWinners();
         } catch (dataError){
             console.error(dataError);
             
@@ -89,7 +89,7 @@ class WinnersIndicator extends EventEmitter {
             ...this.dataList,
         };
         
-        for(const winner of data){
+        for(const winner of winners){
             if(!dataCopy[winner.id]){
                 continue;
             }
