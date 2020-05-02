@@ -4,7 +4,8 @@ const got = require('got');
 const cheerio = require('cheerio');
 const format = require('date-fns/format');
 const sub = require('date-fns/sub');
-const differenceInMinutes = require('date-fns/differenceInMinutes');
+const addMinutes = require('date-fns/addMinutes');
+const isBefore = require('date-fns/isBefore');
 
 const DATA_URL = 'https://www.avanza.se/aktier/vinnare-forlorare.html';
 const MIN_TIME_ON_LIST_MINUTES = 3;
@@ -51,6 +52,7 @@ class WinnersIndicator extends EventEmitter {
     
     async setup() {
         console.log('Setting up "winners" buy indicator');
+        const todayString = format(new Date(), 'yyyy-MM-dd');
         let data = false;
         
         try {
@@ -61,6 +63,10 @@ class WinnersIndicator extends EventEmitter {
             return false;
         }
         
+        if(!this.buyOrderCache[todayString]){
+            this.buyOrderCache[todayString] = [];
+        }
+        
         for(const winner of data){
             this.dataList[winner.id] = {
                 ...winner,
@@ -68,6 +74,8 @@ class WinnersIndicator extends EventEmitter {
                     minutes: 10,
                 }),
             };
+            
+            this.buyOrderCache[todayString].push(winner.id);
         }
         
         setInterval(this.updateData.bind(this), CHECK_INTERVAL_MS);
@@ -104,7 +112,7 @@ class WinnersIndicator extends EventEmitter {
                 continue;
             }
             
-            if(differenceInMinutes(new Date(), winner.added) <= MIN_TIME_ON_LIST_MINUTES){
+            if(isBefore(new Date(), addMinutes(winner.added, MIN_TIME_ON_LIST_MINUTES))){
                 continue;
             }
             
@@ -119,6 +127,11 @@ class WinnersIndicator extends EventEmitter {
             }
             
             Reflect.deleteProperty(dataCopy, instrumentId);
+            
+            if(this.buyOrderCache[todayString].indexOf(instrumentId) === -1){
+                continue;
+            }
+            this.buyOrderCache[todayString].splice(this.buyOrderCache[todayString].indexOf(instrumentId), 1);
         }
         
         this.dataList = dataCopy;
