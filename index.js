@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const Avanza = require('avanza');
 const chalk = require('chalk');
 const cron = require('node-cron');
