@@ -3,6 +3,7 @@ const EventEmitter = require('events');
 const got = require('got');
 const cheerio = require('cheerio');
 const format = require('date-fns/format');
+const sub = require('date-fns/sub');
 const differenceInMinutes = require('date-fns/differenceInMinutes');
 
 const DATA_URL = 'https://www.avanza.se/aktier/vinnare-forlorare.html';
@@ -63,7 +64,9 @@ class WinnersIndicator extends EventEmitter {
         for(const winner of data){
             this.dataList[winner.id] = {
                 ...winner,
-                added: new Date(),
+                added: sub(new Date(), {
+                    minutes: 10,
+                }),
             };
         }
         
