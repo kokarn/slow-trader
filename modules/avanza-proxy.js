@@ -6,7 +6,7 @@ const avanza = new Avanza();
 
 const cache = {};
 
-const getMethodData = async function getMethodData(method, someArgs) {
+const getMethodData = async function getMethodData(method, ...someArgs) {
     if(cache[method]){
         if(isBefore(new Date(), cache[method].expires)){
             return cache[method].data;
@@ -63,7 +63,7 @@ module.exports = {
         return getMethodData('getOverview');
     },    
     getInspirationList: async (inspoId) => {
-        return getMethodData('getInspirationList', [inspoId]);
+        return getMethodData('getInspirationList', inspoId);
     },
     placeOrder: async (order) => {
         // Don't cache this
