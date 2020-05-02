@@ -12,12 +12,12 @@ const notifyy = new Notifyy( {
     users: 'QBfmptGTgQoOS2gGOobd5Olfp31hTKrG',
 } );
 
-module.exports = async function buyer(avanza, buyTarget = false){
+module.exports = async function buyer(avanza, accountId, buyTarget = false){
     console.log('Running buyer');
     
     if(!buyTarget){
         try {
-            buyTarget = await targetFinder(avanza);
+            buyTarget = await targetFinder(avanza, accountId);
         } catch (buyTargetError){
             console.error(buyTargetError);
         }
@@ -42,7 +42,7 @@ module.exports = async function buyer(avanza, buyTarget = false){
     console.log(JSON.stringify(buyTarget, null, 4 ));
     
     const order = {
-        accountId: process.env.AVANZA_ISK_ID,
+        accountId: accountId,
         orderbookId: buyTarget.id,
         orderType: Avanza.BUY,
         price: buyTarget.lastPrice,
