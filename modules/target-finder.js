@@ -15,7 +15,7 @@ const arrayShuffle = function arrayShuffle(a){
     return a;
 };
 
-module.exports = async function targetFinder(avanza){
+module.exports = async function targetFinder(avanza, accountId){
     let inspiration;
     const ignoreList = await cache.get('ignoreList');
     
@@ -31,7 +31,7 @@ module.exports = async function targetFinder(avanza){
     let positionOverview = [];
         
     for(const position of positions.instrumentPositions[0].positions){
-        if(position.accountId !== process.env.AVANZA_ISK_ID){
+        if(position.accountId !== accountId){
             continue;
         }
         
@@ -50,6 +50,21 @@ module.exports = async function targetFinder(avanza){
     
     stockLoop:
     for(const stock of inspiration.orderbooks){
+        /* 
+        {
+            priceThreeMonthsAgo: 535,
+            currency: 'SEK',
+            lastPrice: 492.4,
+            change: 12.6,
+            changePercent: 2.63,
+            updated: '2020-04-29T17:29:51.671+0200',
+            priceOneYearAgo: 450,
+            highlightValue: 41103,
+            name: 'Investor A',
+            id: '5246',
+            flagCode: 'SE'
+        }
+        */
         const maxNumber = positions.totalBuyingPower / stock.lastPrice;
         
         if(maxNumber < MIN_QUANTITY){

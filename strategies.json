@@ -1,0 +1,14 @@
+[
+    {
+        "name": "example1",
+        "isk": 123123123,
+        "buyIndicators": "timer,sell",
+        "sellThreshold": 0.75
+    },
+    {
+        "name": "example2",
+        "isk": 123321312,
+        "buyIndicators": "winners",
+        "sellThreshold": 0.75
+    }
+]

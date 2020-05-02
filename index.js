@@ -4,19 +4,16 @@ const cron = require('node-cron');
 const swedishHoliday = require('swedish-holidays');
 
 const cache = require('./modules/cache');
-const buyer = require('./modules/buyer');
 const isOpen = require('./modules/is-open');
-const streamSeller = require('./modules/stream-seller');
-const streamProxy = require('./modules/stream-proxy');
-const buyIndicators = require('./modules/buy-indicators');
+const Strategy = require('./modules/strategy');
+
+const strategies = require('./strategies.json');
 
 const MIN_RUN_INTERVAL = 15000;
 const START_CRON_STRING = '55 8 * * Monday,Tuesday,Wednesday,Thursday,Friday';
 const STOP_CRON_STRING = '35 17 * * Monday,Tuesday,Wednesday,Thursday,Friday';
 
 const avanza = new Avanza();
-
-let configuredBuyIndicators = ['timer'];
 
 if(!cron.validate(START_CRON_STRING)){
     console.error(`"${START_CRON_STRING}" is not a valid cron string, exiting`);
@@ -28,14 +25,11 @@ if(!cron.validate(STOP_CRON_STRING)){
     process.exit(1);
 }
 
-configuredBuyIndicators = process.env.BUY_INDICATORS.split(',');
-
-let buyEventHandler = false;
-let initiatedIndicators = [];
+let currentStrategies = [];
 
 const start = async function start(){
     console.log(new Date());
-    console.log('Starting');
+    console.log('Starting all strategies');
     
     try {
         await avanza.authenticate({
@@ -49,74 +43,23 @@ const start = async function start(){
         return false;
     }
     
-    buyEventHandler = buyer.bind(this, avanza);
-    
-    let accountOverview;
-    try {
-        accountOverview = await avanza.getOverview();
-    } catch (overviewError){
-        console.error(overviewError);
+    for(const strategyConfig of strategies){
+        const newStrategy = new Strategy(strategyConfig, avanza);
         
-        return false;
-    }
-    
-    let accountsIds = [];
-    
-    for(const account of accountOverview.accounts){
-        accountsIds.push(account.accountId);
-    }
-    
-    console.log('Setting up subscription for deals');
-    avanza.subscribe(Avanza.DEALS, `_${accountsIds.join(',')}`, (dealEvent) => {
-        console.log('Got a deal event');
-        console.log(JSON.stringify(dealEvent, null, 4));
-        
-        if(dealEvent.deals[0].orderType === 'Sälj'){
-            // We've sold something, let's buy something new
-            // buyer(avanza);
-        } else if (dealEvent.deals[0].orderType === 'Köp'){
-            // We've bought something, let's sell it
-            streamSeller(avanza, dealEvent.deals[0].orderbook.id, dealEvent.deals[0].orderbook.name);
-        } else {
-            console.error(`Unknown event type ${dealEvent.deals[0].orderType}`);
-        }
-    });
-    
-    for(const indicator of configuredBuyIndicators){
-        const newIndiator = new buyIndicators[indicator](avanza);
-        
-        newIndiator.on('buy', buyEventHandler);
-        
-        initiatedIndicators.push(newIndiator);
-    }
-    
-    let positionOverview;
-    try {
-        positionOverview = await avanza.getPositions();
-    } catch (overviewError){
-        console.error(overviewError);
-        
-        return false;
-    }
-    
-    for(const position of positionOverview.instrumentPositions[0].positions){
-        if(position.accountId !== process.env.AVANZA_ISK_ID){
-            continue;
-        }
-        
-        streamSeller(avanza, position.orderbookId, position.name);
+        newStrategy.start();
+        currentStrategies.push(newStrategy);
     }
 };
 
 const stop = function stop(){
     console.log(new Date());
-    console.log('Stopping');
+    console.log('Stopping all strategies');
     
-    for(const indicator of initiatedIndicators){
-        indicator.removeListener('buy', buyEventHandler);
+    for(const strategy of currentStrategies){
+        strategy.stop();
     }
     
-    streamProxy.clear();
+    currentStrategies = [];
     avanza.disconnect();
 };
 
@@ -133,7 +76,7 @@ const stop = function stop(){
     cache.set('lastRun', new Date());
     
     if(isOpen()){
-        start();
+        start(); 
     }
 
     cron.schedule(START_CRON_STRING, () => {

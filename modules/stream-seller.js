@@ -28,7 +28,7 @@ module.exports = async function seller(avanza, instrumentId, instrumentName){
         return false;
     }
     
-    const streamId = streamProxy.add(avanza, instrumentId, async (quoteUpdate) => {
+    const streamId = streamProxy.add(avanza, accountId, instrumentId, async (quoteUpdate) => {
         if(!quoteUpdate.sellPrice){
             console.log(`No sell price for ${instrumentName}, exchange is probably closed`);
             
@@ -50,7 +50,7 @@ module.exports = async function seller(avanza, instrumentId, instrumentName){
         console.log(chalk.green(`Should sell ${instrumentName}, profit at ${chalk.green(+profitPercent.toFixed(2))}%`));
         
         const order = {
-            accountId: process.env.AVANZA_ISK_ID,
+            accountId: accountId,
             orderbookId: instrumentOwnership.orderbookId,
             orderType: Avanza.SELL,
             price: quoteUpdate.sellPrice,
