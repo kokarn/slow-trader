@@ -10,7 +10,7 @@ class TimerIndicator extends EventEmitter {
     }
     
     setup() {
-        // Emit 
+        console.log('Setting up "timer" buy indicator');
         this.buyInterval = setInterval(() => {
             this.emit('buy');
         }, 590000);

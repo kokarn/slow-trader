@@ -12,6 +12,7 @@ class SellIndicator extends EventEmitter {
     }
     
     async setup() {
+        console.log('Setting up "sell" buy indicator');
         let accountOverview;
         try {
             accountOverview = await this.avanza.getOverview();

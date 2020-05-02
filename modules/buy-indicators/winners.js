@@ -49,6 +49,7 @@ class WinnersIndicator extends EventEmitter {
     }
     
     async setup() {
+        console.log('Setting up "winners" buy indicator');
         let data = false;
         
         try {

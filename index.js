@@ -10,9 +10,7 @@ const buyer = require('./modules/buyer');
 const isOpen = require('./modules/is-open');
 const streamSeller = require('./modules/stream-seller');
 const streamProxy = require('./modules/stream-proxy');
-
-const SellIndicator = require('./modules/buy-indicators/sell');
-const TimerIndicator = require('./modules/buy-indicators/timer');
+const buyIndicators = require('./modules/buy-indicators');
 
 const MIN_RUN_INTERVAL = 15000;
 const START_CRON_STRING = '55 8 * * Monday,Tuesday,Wednesday,Thursday,Friday';
@@ -20,9 +18,7 @@ const STOP_CRON_STRING = '35 17 * * Monday,Tuesday,Wednesday,Thursday,Friday';
 
 const avanza = new Avanza();
 
-let buyEventHandler = false;
-let timerIndicator = false;
-let sellIndicator = false;
+let configuredBuyIndicators = ['timer'];
 
 if(!cron.validate(START_CRON_STRING)){
     console.error(`"${START_CRON_STRING}" is not a valid cron string, exiting`);
@@ -33,6 +29,11 @@ if(!cron.validate(STOP_CRON_STRING)){
     console.error(`"${STOP_CRON_STRING}" is not a valid cron string, exiting`);
     process.exit(1);
 }
+
+configuredBuyIndicators = process.env.BUY_INDICATORS.split(',');
+
+let buyEventHandler = false;
+let initiatedIndicators = [];
 
 const start = async function start(){
     console.log(new Date());
@@ -83,11 +84,13 @@ const start = async function start(){
         }
     });
     
-    sellIndicator = new SellIndicator(avanza);
-    timerIndicator = new TimerIndicator();
-    
-    sellIndicator.on('buy', buyEventHandler);
-    timerIndicator.on('buy', buyEventHandler);
+    for(const indicator of configuredBuyIndicators){
+        const newIndiator = new buyIndicators[indicator](avanza);
+        
+        newIndiator.on('buy', buyEventHandler);
+        
+        initiatedIndicators.push(newIndiator);
+    }
     
     let positionOverview;
     try {
@@ -111,8 +114,10 @@ const stop = function stop(){
     console.log(new Date());
     console.log('Stopping');
     
-    sellIndicator.removeListener('buy', buyEventHandler);
-    timerIndicator.removeListener('buy', buyEventHandler);
+    for(const indicator of initiatedIndicators){
+        indicator.removeListener('buy', buyEventHandler);
+    }
+    
     streamProxy.clear();
     avanza.disconnect();
 };
