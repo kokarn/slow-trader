@@ -1,7 +1,9 @@
-module.exports = async function seller(avanza, accountId, instrumentId){
+const avanzaProxy = require('./avanza-proxy');
+
+module.exports = async function seller(accountId, instrumentId){
     let positions;
     try {
-        positions = await avanza.getPositions();
+        positions = await avanzaProxy.getPositions();
     } catch (overviewError){
         console.error(overviewError);
         

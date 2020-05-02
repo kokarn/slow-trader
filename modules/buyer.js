@@ -7,17 +7,18 @@ const add = require('date-fns/add');
 
 const cache = require('./cache');
 const targetFinder = require('./target-finder');
+const avanzaProxy = require('./avanza-proxy');
 
 const notifyy = new Notifyy( {
     users: 'QBfmptGTgQoOS2gGOobd5Olfp31hTKrG',
 } );
 
-module.exports = async function buyer(avanza, accountId, buyTarget = false){
+module.exports = async function buyer(accountId, buyTarget = false){
     console.log('Running buyer');
     
     if(!buyTarget){
         try {
-            buyTarget = await targetFinder(avanza, accountId);
+            buyTarget = await targetFinder(accountId);
         } catch (buyTargetError){
             console.error(buyTargetError);
         }
@@ -31,7 +32,7 @@ module.exports = async function buyer(avanza, accountId, buyTarget = false){
     
     let positions;
     try {
-        positions = await avanza.getPositions();
+        positions = await avanzaProxy.getPositions();
     } catch (overviewError){
         console.error(overviewError);
         
@@ -51,7 +52,6 @@ module.exports = async function buyer(avanza, accountId, buyTarget = false){
     };
     
     console.log(chalk.green('Posting buy order'));
-    console.log(order);
     
     try {
         await notifyy.send( {
@@ -64,7 +64,7 @@ module.exports = async function buyer(avanza, accountId, buyTarget = false){
     }
     
     try {
-        const orderResponse = await avanza.placeOrder(order);
+        const orderResponse = await avanzaProxy.placeOrder(order);
         
         if(orderResponse.status === 'REJECTED'){
             console.error(orderResponse);

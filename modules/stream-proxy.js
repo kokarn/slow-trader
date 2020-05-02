@@ -1,12 +1,14 @@
 const Avanza = require('avanza');
 const uuid = require('uuid');
 
+const avanzaProxy = require('./avanza-proxy');
+
 const streams = {};
 const handlers = {};
 const paused = {};
 
-const create = function create(avanza, instrumentId){    
-    avanza.subscribe(Avanza.QUOTES, instrumentId, (quoteUpdate) => {
+const create = function create(instrumentId){    
+    avanzaProxy.subscribe(Avanza.QUOTES, instrumentId, (quoteUpdate) => {
         for(const handlerId in handlers[instrumentId]){
             if(paused[instrumentId]?.[handlerId]){
                 continue;
@@ -20,7 +22,7 @@ const create = function create(avanza, instrumentId){
 };
 
 module.exports = {
-    add(avanza, instrumentId, callback) {
+    add(instrumentId, callback) {
         const handlerId = uuid.v4();
         
         if(!handlers[instrumentId]){
@@ -30,7 +32,7 @@ module.exports = {
         handlers[instrumentId][handlerId] = callback;
         
         if(!streams[instrumentId]){
-            streams[instrumentId] = create(avanza, instrumentId);
+            streams[instrumentId] = create(instrumentId);
         }
         
         return handlerId;

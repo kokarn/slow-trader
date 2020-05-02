@@ -1,9 +1,11 @@
 const chalk = require('chalk');
 
-module.exports = async function getInstrumentCount(avanza, id){
+const avanzaProxy = require('./avanza-proxy');
+
+module.exports = async function getInstrumentCount(id){
     let positions;
     try {
-        positions = await avanza.getPositions();
+        positions = await avanzaProxy.getPositions();
     } catch (overviewError){
         console.error(overviewError);
         

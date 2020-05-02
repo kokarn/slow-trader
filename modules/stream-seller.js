@@ -8,6 +8,7 @@ const add = require('date-fns/add');
 const cache = require('./cache');
 const getOwnership = require('./get-ownership');
 const streamProxy = require('./stream-proxy');
+const avanzaProxy = require('./avanza-proxy');
 
 const notifyy = new Notifyy( {
     users: 'QBfmptGTgQoOS2gGOobd5Olfp31hTKrG',
@@ -16,19 +17,19 @@ const notifyy = new Notifyy( {
 const MIN_PROFIT_PERCENT = process.env.SELL_THRESHOLD_PERCENT;
 const BUY_TIMEOUT_MINUTES = 5;
 
-module.exports = async function seller(avanza, instrumentId, instrumentName){
+module.exports = async function seller(instrumentId, instrumentName){
     console.log(`Setting up seller for ${instrumentName} with a target of ${MIN_PROFIT_PERCENT}% profit`);
     
     let instrumentOwnership;
     try {
-        instrumentOwnership = await getOwnership(avanza, instrumentId);
+        instrumentOwnership = await getOwnership(instrumentId);
     } catch (ownershipError) {
         console.error(ownershipError);
         
         return false;
     }
     
-    const streamId = streamProxy.add(avanza, accountId, instrumentId, async (quoteUpdate) => {
+    const streamId = streamProxy.add(accountId, instrumentId, async (quoteUpdate) => {
         if(!quoteUpdate.sellPrice){
             console.log(`No sell price for ${instrumentName}, exchange is probably closed`);
             
@@ -65,7 +66,6 @@ module.exports = async function seller(avanza, instrumentId, instrumentName){
         }
         
         console.log(chalk.green('Posting sell order'));
-        console.log(order);
         
         streamProxy.pause(instrumentId, streamId);
         
@@ -81,7 +81,7 @@ module.exports = async function seller(avanza, instrumentId, instrumentName){
         
         let orderResponse;
         try {
-            orderResponse = await avanza.placeOrder(order);
+            orderResponse = await avanzaProxy.placeOrder(order);
         } catch (orderError){
             console.error(orderError);
             streamProxy.unpause(instrumentId, streamId);

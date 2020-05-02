@@ -2,11 +2,11 @@ const EventEmitter = require('events');
 
 const Avanza = require('avanza');
 
+const avanzaProxy = require('../avanza-proxy');
+
 class SaleIndicator extends EventEmitter {
-    constructor(avanza){
+    constructor(){
         super();
-        
-        this.avanza = avanza;
         
         this.setup();
     }
@@ -15,7 +15,7 @@ class SaleIndicator extends EventEmitter {
         console.log('Setting up "sale" buy indicator');
         let accountOverview;
         try {
-            accountOverview = await this.avanza.getOverview();
+            accountOverview = await avanzaProxy.getOverview();
         } catch (overviewError){
             console.error(overviewError);
             
@@ -29,7 +29,7 @@ class SaleIndicator extends EventEmitter {
         }
         
         console.log('Setting up subscription for deals');
-        this.avanza.subscribe(Avanza.DEALS, `_${accountsIds.join(',')}`, (dealEvent) => {
+        avanzaProxy.subscribe(Avanza.DEALS, `_${accountsIds.join(',')}`, (dealEvent) => {
             if(dealEvent.deals[0].orderType === 'Sälj'){
                 this.emit('buy');
             }

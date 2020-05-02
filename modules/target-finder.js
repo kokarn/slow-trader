@@ -2,6 +2,7 @@ const chalk = require('chalk');
 const isAfter = require('date-fns/isAfter');
 
 const cache = require('./cache');
+const avanzaProxy = require('./avanza-proxy');
 
 const MIN_QUANTITY = 1;
 const INSPO_ID = 'jxGl2hfp'; //Populära aktier i Sverige
@@ -15,13 +16,13 @@ const arrayShuffle = function arrayShuffle(a){
     return a;
 };
 
-module.exports = async function targetFinder(avanza, accountId){
+module.exports = async function targetFinder(accountId){
     let inspiration;
     const ignoreList = await cache.get('ignoreList');
     
     let positions;
     try {
-        positions = await avanza.getPositions();
+        positions = await avanzaProxy.getPositions();
     } catch (overviewError){
         console.error(overviewError);
         
@@ -39,7 +40,7 @@ module.exports = async function targetFinder(avanza, accountId){
     }
     
     try {
-        inspiration = await avanza.getInspirationList(INSPO_ID);
+        inspiration = await avanzaProxy.getInspirationList(INSPO_ID);
     } catch (overviewError){
         console.error(overviewError);
         

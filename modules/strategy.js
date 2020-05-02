@@ -4,16 +4,15 @@ const streamSeller = require('./stream-seller');
 const streamProxy = require('./stream-proxy');
 const buyIndicators = require('./buy-indicators');
 const buyer = require('./buyer');
+const avanzaProxy = require('./avanza-proxy');
 
 class Strategy {
-    constructor(strategyConfig, avanza){
-        this.avanza = avanza;
-        
+    constructor(strategyConfig){
         this.name = strategyConfig.name;
         this.accountId = strategyConfig.isk;
         this.buyIndicators = strategyConfig.buyIndicators.split(',');
         this.sellThreshold = strategyConfig.sellThreshold;
-        this.buyEventHandler = buyer.bind(this, this.avanza, this.accountId);
+        this.buyEventHandler = buyer.bind(this, this.accountId);
         this.initiatedIndicators = [];
     }
     
@@ -22,7 +21,7 @@ class Strategy {
         
         let accountOverview;
         try {
-            accountOverview = await this.avanza.getOverview();
+            accountOverview = await avanzaProxy.getOverview();
         } catch (overviewError){
             console.error(overviewError);
             
@@ -36,23 +35,18 @@ class Strategy {
         }
         
         console.log('Setting up subscription for deals');
-        this.avanza.subscribe(Avanza.DEALS, `_${accountsIds.join(',')}`, (dealEvent) => {
+        avanzaProxy.subscribe(Avanza.DEALS, `_${accountsIds.join(',')}`, (dealEvent) => {
             console.log('Got a deal event');
             console.log(JSON.stringify(dealEvent, null, 4));
             
-            if(dealEvent.deals[0].orderType === 'Sälj'){
-                // We've sold something, let's buy something new
-                // buyer(this.avanza);
-            } else if (dealEvent.deals[0].orderType === 'Köp'){
+            if(dealEvent.deals[0].orderType === 'Köp'){
                 // We've bought something, let's sell it
-                streamSeller(this.avanza, this.accountId, dealEvent.deals[0].orderbook.id, dealEvent.deals[0].orderbook.name);
-            } else {
-                console.error(`Unknown event type ${dealEvent.deals[0].orderType}`);
+                streamSeller(this.accountId, dealEvent.deals[0].orderbook.id, dealEvent.deals[0].orderbook.name);
             }
         });
         
         for(const indicator of this.buyIndicators){
-            const newIndiator = new buyIndicators[indicator](this.avanza);
+            const newIndiator = new buyIndicators[indicator]();
             
             newIndiator.on('buy', this.buyEventHandler);
             
@@ -61,7 +55,7 @@ class Strategy {
         
         let positionOverview;
         try {
-            positionOverview = await this.avanza.getPositions();
+            positionOverview = await avanzaProxy.getPositions();
         } catch (overviewError){
             console.error(overviewError);
             
@@ -73,7 +67,7 @@ class Strategy {
                 continue;
             }
             
-            streamSeller(this.avanza, position.orderbookId, position.name);
+            streamSeller(position.orderbookId, position.name);
         }
     }
     

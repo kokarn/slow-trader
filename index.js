@@ -1,4 +1,3 @@
-const Avanza = require('avanza');
 const chalk = require('chalk');
 const cron = require('node-cron');
 const swedishHoliday = require('swedish-holidays');
@@ -6,14 +5,13 @@ const swedishHoliday = require('swedish-holidays');
 const cache = require('./modules/cache');
 const isOpen = require('./modules/is-open');
 const Strategy = require('./modules/strategy');
+const avanzaProxy = require('./modules/avanza-proxy');
 
 const strategies = require('./strategies.json');
 
 const MIN_RUN_INTERVAL = 15000;
 const START_CRON_STRING = '55 8 * * Monday,Tuesday,Wednesday,Thursday,Friday';
 const STOP_CRON_STRING = '35 17 * * Monday,Tuesday,Wednesday,Thursday,Friday';
-
-const avanza = new Avanza();
 
 if(!cron.validate(START_CRON_STRING)){
     console.error(`"${START_CRON_STRING}" is not a valid cron string, exiting`);
@@ -31,20 +29,10 @@ const start = async function start(){
     console.log(new Date());
     console.log('Starting all strategies');
     
-    try {
-        await avanza.authenticate({
-            username: process.env.AVANZA_USERNAME,
-            password: process.env.AVANZA_PASSWORD,
-            totpSecret: process.env.AVANZA_TOTP_SECRET,
-        });
-    } catch (authenticationError){
-        console.error(authenticationError);
-        
-        return false;
-    }
+    await avanzaProxy.connect();
     
     for(const strategyConfig of strategies){
-        const newStrategy = new Strategy(strategyConfig, avanza);
+        const newStrategy = new Strategy(strategyConfig);
         
         newStrategy.start();
         currentStrategies.push(newStrategy);
@@ -60,7 +48,7 @@ const stop = function stop(){
     }
     
     currentStrategies = [];
-    avanza.disconnect();
+    avanzaProxy.disconnect();
 };
 
 ( async () => {
