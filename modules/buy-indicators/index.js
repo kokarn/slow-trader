@@ -1,5 +1,5 @@
 module.exports = {
-    sell: require('./sell'),
+    sale: require('./sale'),
     timer: require('./timer'),
     winners: require('./winners'),
 };

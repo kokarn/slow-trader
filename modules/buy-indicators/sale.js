@@ -2,7 +2,7 @@ const EventEmitter = require('events');
 
 const Avanza = require('avanza');
 
-class SellIndicator extends EventEmitter {
+class SaleIndicator extends EventEmitter {
     constructor(avanza){
         super();
         
@@ -12,7 +12,7 @@ class SellIndicator extends EventEmitter {
     }
     
     async setup() {
-        console.log('Setting up "sell" buy indicator');
+        console.log('Setting up "sale" buy indicator');
         let accountOverview;
         try {
             accountOverview = await this.avanza.getOverview();
@@ -37,4 +37,4 @@ class SellIndicator extends EventEmitter {
     }
 }
 
-module.exports = SellIndicator;
+module.exports = SaleIndicator;
