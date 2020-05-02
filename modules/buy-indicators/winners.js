@@ -7,7 +7,7 @@ const sub = require('date-fns/sub');
 const differenceInMinutes = require('date-fns/differenceInMinutes');
 
 const DATA_URL = 'https://www.avanza.se/aktier/vinnare-forlorare.html';
-const MIN_TIME_ON_LIST_MINUTES = 5;
+const MIN_TIME_ON_LIST_MINUTES = 3;
 const CHECK_INTERVAL_MS = 60000;
 
 class WinnersIndicator extends EventEmitter {
