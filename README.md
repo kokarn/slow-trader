@@ -15,16 +15,7 @@ the password to login with
 string  
 avanza totp secret configured by [the totp setup](https://github.com/fhqvst/avanza#getting-a-totp-secret)
 
-`AVANZA_ISK_ID`  
-number  
-the account to use for trading
+## Strategies
 
-`BUY_INDICATORS`  
-string  
-comma separated list of what buy indicators to use.  
-available: `timer`, `sell`, `winners`
-
-`SELL_THRESHOLD_PERCENT`  
-number  
-target percent profit to hit on a stock before selling
+Defined in [strategies.json](./strategies.json)
 
