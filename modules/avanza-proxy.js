@@ -6,6 +6,10 @@ const avanza = new Avanza();
 
 const cache = {};
 
+const updateCache = function updateCache(method, property, newValue){
+    cache[method][property] = newValue;
+};
+
 const getMethodData = async function getMethodData(method, ...someArgs) {
     if(cache[method]){
         if(isBefore(new Date(), cache[method].expires)){
@@ -66,7 +70,16 @@ module.exports = {
         return getMethodData('getInspirationList', inspoId);
     },
     placeOrder: async (order) => {
-        // Don't cache this
+        if(order.orderType === Avanza.BUY){
+            if(cache['getPositions'].totalBuyingPower < order.volume * order.price){
+                console.error(`Can't buy ${order.volume} of ${order.orderbookId} for ${order.price} as buyingPower is only ${cache['getPositions'].totalBuyingPower}`);
+                
+                return false;
+            }
+            
+            updateCache('getPositions', 'totalBuyingPower', cache['getPositions'].totalBuyingPower - order.volume * order.price);
+        }
+        
         try {
             const orderResponse = await avanza.placeOrder(order);
             
