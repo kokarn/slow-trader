@@ -13,11 +13,11 @@ const notifyy = new Notifyy( {
     users: 'QBfmptGTgQoOS2gGOobd5Olfp31hTKrG',
 } );
 
-const MIN_PROFIT_PERCENT = 0.75;
+const MIN_PROFIT_PERCENT = process.env.SELL_THRESHOLD_PERCENT;
 const BUY_TIMEOUT_MINUTES = 5;
 
 module.exports = async function seller(avanza, instrumentId, instrumentName){
-    console.log(`Setting up seller for ${instrumentName}`);
+    console.log(`Setting up seller for ${instrumentName} with a target of ${MIN_PROFIT_PERCENT}% profit`);
     
     let instrumentOwnership;
     try {
