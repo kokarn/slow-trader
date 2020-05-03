@@ -59,25 +59,9 @@ module.exports = async function seller(instrumentId, instrumentName){
             volume: instrumentOwnership.volume,
         };
         
-        if(!order.volume || order.volume <= 0){
-            console.log(`Order with 0 volume is invalid, let's not do that`);
-            
-            return false;
-        }
-        
         console.log(chalk.green('Posting sell order'));
         
         streamProxy.pause(instrumentId, streamId);
-        
-        try {
-            notifyy.send( {
-                message: '```' + JSON.stringify(order, null, 4) + '```',
-                title: `New sell order for ${instrumentOwnership.name} posted`,
-                cache: 'false',
-            } );
-        } catch (notifyyError){
-            console.error(notifyyError);
-        }
         
         let orderResponse;
         try {
@@ -87,6 +71,16 @@ module.exports = async function seller(instrumentId, instrumentName){
             streamProxy.unpause(instrumentId, streamId);
             
             return false;
+        }
+        
+        try {
+            notifyy.send( {
+                message: '```' + JSON.stringify(order, null, 4) + '```',
+                title: `New sell order for ${instrumentOwnership.name} posted`,
+                cache: 'false',
+            } );
+        } catch (notifyyError){
+            console.error(notifyyError);
         }
         
         if(orderResponse.status === 'REJECTED'){

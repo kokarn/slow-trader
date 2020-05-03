@@ -12,7 +12,7 @@ class Strategy {
         this.accountId = strategyConfig.isk;
         this.buyIndicators = strategyConfig.buyIndicators.split(',');
         this.sellThreshold = strategyConfig.sellThreshold;
-        this.buyEventHandler = buyer.bind(this, this.accountId);
+        this.buyEventHandler = buyer.bind(this, this.accountId, this.sellThreshold);
         this.initiatedIndicators = [];
     }
     

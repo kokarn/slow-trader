@@ -13,7 +13,7 @@ const notifyy = new Notifyy( {
     users: 'QBfmptGTgQoOS2gGOobd5Olfp31hTKrG',
 } );
 
-module.exports = async function buyer(accountId, buyTarget = false){
+module.exports = async function buyer(accountId, sellThreshold, buyTarget = false){
     console.log('Running buyer');
     
     if(!buyTarget){
@@ -49,19 +49,10 @@ module.exports = async function buyer(accountId, buyTarget = false){
         price: buyTarget.lastPrice,
         validUntil: format(startOfTomorrow(), 'yyyy-MM-dd'),
         volume: Math.floor(positions.totalBuyingPower / buyTarget.lastPrice),
+        sellThreshold: sellThreshold,
     };
     
     console.log(chalk.green('Posting buy order'));
-    
-    try {
-        await notifyy.send( {
-            message: '```' + JSON.stringify(order, null, 4) + '```',
-            title: `New buy order for ${buyTarget.name} posted`,
-            cache: 'false',
-        } );
-    } catch (notifyyError){
-        console.error(notifyyError);
-    }
     
     try {
         const orderResponse = await avanzaProxy.placeOrder(order);
@@ -82,6 +73,18 @@ module.exports = async function buyer(accountId, buyTarget = false){
         }
     } catch (orderError){
         console.error(orderError);
+        
+        return false;
+    }
+    
+    try {
+        await notifyy.send( {
+            message: '```' + JSON.stringify(order, null, 4) + '```',
+            title: `New buy order for ${buyTarget.name} posted`,
+            cache: 'false',
+        } );
+    } catch (notifyyError){
+        console.error(notifyyError);
     }
     
     return true;
