@@ -41,6 +41,10 @@ class Strategy {
             console.log('Got a deal event');
             console.log(JSON.stringify(dealEvent, null, 4));
             
+            if(dealEvent.deals[0].accountId !== this.accountId){
+                return true;
+            }
+            
             if(dealEvent.deals[0].orderType === 'Köp'){
                 // We've bought something, let's sell it
                 streamSeller(this.accountId, this.sellThreshold, dealEvent.deals[0].orderbook.id, dealEvent.deals[0].orderbook.name);
