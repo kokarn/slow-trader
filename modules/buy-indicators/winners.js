@@ -9,7 +9,7 @@ const isBefore = require('date-fns/isBefore');
 
 const DATA_URL = 'https://www.avanza.se/aktier/vinnare-forlorare.html';
 const MIN_TIME_ON_LIST_MINUTES = 3;
-const CHECK_INTERVAL_MS = 60000;
+const CHECK_INTERVAL_MS = 30000;
 
 class WinnersIndicator extends EventEmitter {
     constructor(){
