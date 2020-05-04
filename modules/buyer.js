@@ -54,8 +54,9 @@ module.exports = async function buyer(accountId, sellThreshold, buyTarget = fals
     
     console.log(chalk.green('Posting buy order'));
     
+    let orderResponse;
     try {
-        const orderResponse = await avanzaProxy.placeOrder(order);
+        orderResponse = await avanzaProxy.placeOrder(order);
         
         if(orderResponse.status === 'REJECTED'){
             console.error(orderResponse);
@@ -77,14 +78,16 @@ module.exports = async function buyer(accountId, sellThreshold, buyTarget = fals
         return false;
     }
     
-    try {
-        await notifyy.send( {
-            message: '```' + JSON.stringify(order, null, 4) + '```',
-            title: `New buy order for ${buyTarget.name} posted`,
-            cache: 'false',
-        } );
-    } catch (notifyyError){
-        console.error(notifyyError);
+    if(orderResponse && orderResponse.status === 'SUCCESS'){
+        try {
+            await notifyy.send( {
+                message: '```' + JSON.stringify(order, null, 4) + '```',
+                title: `New buy order for ${buyTarget.name} posted`,
+                cache: 'false',
+            } );
+        } catch (notifyyError){
+            console.error(notifyyError);
+        }
     }
     
     return true;
