@@ -23,7 +23,7 @@ const updateCache = function updateCache(method, property, newValue){
 };
 
 const getMethodData = async function getMethodData(method, ...someArgs) {
-    if(cache[method]){
+    if(cache[method] && !someArgs){
         if(isBefore(new Date(), cache[method].expires)){
             return cache[method].data;
         }
@@ -44,12 +44,14 @@ const getMethodData = async function getMethodData(method, ...someArgs) {
         return false;
     }
     
-    cache[method] = {
-        data: responseData,
-        expires: add(new Date(), {
-            seconds: 30,
-        }),
-    };
+    if(!someArgs){
+        cache[method] = {
+            data: responseData,
+            expires: add(new Date(), {
+                seconds: 30,
+            }),
+        };
+    }
     
     return responseData;
 };
