@@ -116,15 +116,20 @@ class WinnersIndicator extends EventEmitter {
             }
             
             if(this.buyOrderCache[todayString].includes(winner.id)){
+                console.log(`New item already bought this time, let's not buy again`);
+                
                 continue;
             }
             
             if(isBefore(new Date(), addMinutes(winner.added, MIN_TIME_ON_LIST_MINUTES))){
+                console.log(`New item hasn't been long enough on the list, not buying yet`);
+                
                 continue;
             }
             
             this.buyOrderCache[todayString].push(winner.id);
-            
+            console.log(`Found a buying target from winners`);
+            console.log(winner);
             this.emit('buy', winner);
         }
         
