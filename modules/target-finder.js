@@ -49,6 +49,15 @@ module.exports = async function targetFinder(accountId){
     
     arrayShuffle(inspiration.orderbooks);
     
+    let accountOverview;
+    try {
+        accountOverview = await avanzaProxy.getAccountOverview(accountId);
+    } catch (overviewError){
+        console.error(overviewError);
+        
+        return false;
+    }
+    
     stockLoop:
     for(const stock of inspiration.orderbooks){
         /* 
@@ -66,10 +75,10 @@ module.exports = async function targetFinder(accountId){
             flagCode: 'SE'
         }
         */
-        const maxNumber = positions.totalBuyingPower / stock.lastPrice;
+        const maxNumber = accountOverview.buyingPower / stock.lastPrice;
         
         if(maxNumber < MIN_QUANTITY){
-            console.log(chalk.yellow(`Can only buy ${+maxNumber.toFixed(2)} of ${stock.name} for ${positions.totalBuyingPower} SEK, skipping`));
+            console.log(chalk.yellow(`Can only buy ${+maxNumber.toFixed(2)} of ${stock.name} for ${accountOverview.buyingPower} SEK, skipping`));
             
             continue;
         }

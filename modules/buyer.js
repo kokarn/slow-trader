@@ -30,9 +30,9 @@ module.exports = async function buyer(accountId, sellThreshold, buyTarget = fals
         return true;
     }
     
-    let positions;
+    let accountOverview;
     try {
-        positions = await avanzaProxy.getPositions();
+        accountOverview = await avanzaProxy.getAccountOverview(accountId);
     } catch (overviewError){
         console.error(overviewError);
         
@@ -48,7 +48,7 @@ module.exports = async function buyer(accountId, sellThreshold, buyTarget = fals
         orderType: Avanza.BUY,
         price: buyTarget.lastPrice,
         validUntil: format(startOfTomorrow(), 'yyyy-MM-dd'),
-        volume: Math.floor(positions.totalBuyingPower / buyTarget.lastPrice),
+        volume: Math.floor(accountOverview.buyingPower / buyTarget.lastPrice),
         sellThreshold: sellThreshold,
     };
     
