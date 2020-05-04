@@ -22,9 +22,15 @@ module.exports = async function seller(accountId, instrumentId, instrumentName){
     
     let instrumentOwnership;
     try {
-        instrumentOwnership = await getOwnership(instrumentId);
+        instrumentOwnership = await getOwnership(accountId, instrumentId);
     } catch (ownershipError) {
         console.error(ownershipError);
+        
+        return false;
+    }
+    
+    if(!instrumentOwnership){
+        console.error(`Tried to set up a seller for ${instrumentName} on account ${accountId} but couldn't find any, not doing that`);
         
         return false;
     }
