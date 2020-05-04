@@ -9,7 +9,7 @@ const avanzaProxy = require('./avanza-proxy');
 class Strategy {
     constructor(strategyConfig){
         this.name = strategyConfig.name;
-        this.accountId = strategyConfig.isk;
+        this.accountId = strategyConfig.isk.toString();
         this.buyIndicators = strategyConfig.buyIndicators.split(',');
         this.sellThreshold = strategyConfig.sellThreshold;
         this.buyEventHandler = buyer.bind(this, this.accountId, this.sellThreshold);
@@ -63,7 +63,7 @@ class Strategy {
         }
         
         for(const position of positionOverview.instrumentPositions[0].positions){
-            if(position.accountId != this.accountId){
+            if(position.accountId !== this.accountId){
                 continue;
             }
             
