@@ -39,9 +39,9 @@ const getMethodData = async function getMethodData(method, ...someArgs) {
     let responseData;
     try {
         if(someArgs){
-            responseData = await avanza[cacheKey](...someArgs);
+            responseData = await avanza[method](...someArgs);
         } else {
-            responseData = await avanza[cacheKey]();
+            responseData = await avanza[method]();
         }
     } catch (requestError){
         console.error(requestError);
