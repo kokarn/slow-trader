@@ -84,7 +84,7 @@ class WinnersIndicator extends EventEmitter {
     async updateData(){
         let winners = false;
         const todayString = format(new Date(), 'yyyy-MM-dd');
-        console.log(`Upading winner data`);
+        console.log(`Updating winner data`);
         
         try {
             winners = await this.getWinners();
