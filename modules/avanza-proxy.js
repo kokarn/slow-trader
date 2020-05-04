@@ -130,11 +130,13 @@ module.exports = {
             updateCache('getPositions', 'totalBuyingPower', cache['getPositions']?.totalBuyingPower - order.volume * order.price);
         }
         
+        console.log(order);
+        
         try {
             const orderResponse = await avanza.placeOrder(order);
             
             return orderResponse;
-        } catch (orderResponse){
+        } catch (orderError){
             throw orderError;
         }
     },
