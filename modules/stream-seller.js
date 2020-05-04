@@ -17,7 +17,7 @@ const notifyy = new Notifyy( {
 const MIN_PROFIT_PERCENT = process.env.SELL_THRESHOLD_PERCENT;
 const BUY_TIMEOUT_MINUTES = 5;
 
-module.exports = async function seller(instrumentId, instrumentName){
+module.exports = async function seller(accountId, instrumentId, instrumentName){
     console.log(`Setting up seller for ${instrumentName} with a target of ${MIN_PROFIT_PERCENT}% profit`);
     
     let instrumentOwnership;
@@ -29,7 +29,7 @@ module.exports = async function seller(instrumentId, instrumentName){
         return false;
     }
     
-    const streamId = streamProxy.add(accountId, instrumentId, async (quoteUpdate) => {
+    const streamId = streamProxy.add(instrumentId, async (quoteUpdate) => {
         if(!quoteUpdate.sellPrice){
             console.log(`No sell price for ${instrumentName}, exchange is probably closed`);
             

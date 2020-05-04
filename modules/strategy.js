@@ -63,11 +63,11 @@ class Strategy {
         }
         
         for(const position of positionOverview.instrumentPositions[0].positions){
-            if(position.accountId !== this.accountId){
+            if(position.accountId != this.accountId){
                 continue;
             }
             
-            streamSeller(position.orderbookId, position.name);
+            streamSeller(this.accountId, position.orderbookId, position.name);
         }
     }
     
