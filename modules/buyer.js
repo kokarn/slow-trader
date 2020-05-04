@@ -57,28 +57,30 @@ module.exports = async function buyer(accountId, sellThreshold, buyTarget = fals
     let orderResponse;
     try {
         orderResponse = await avanzaProxy.placeOrder(order);
-        
-        if(orderResponse.status === 'REJECTED'){
-            console.error(orderResponse);
-            
-            if(orderResponse.messages[0] === 'Detta värdepapper går endast att sälja.'){
-                await cache.add('ignoreList', {
-                    id: buyTarget.id,
-                    end: add(new Date(), {
-                        years: 1,
-                    }),
-                });
-            }
-        } else {
-            console.log(JSON.stringify(orderResponse, null, 4));
-        }
     } catch (orderError){
         console.error(orderError);
         
         return false;
     }
     
-    if(orderResponse && orderResponse.status === 'SUCCESS'){
+    if(!orderResponse){
+        return false;
+    }
+    
+    if(orderResponse.status === 'REJECTED'){       
+        if(orderResponse.messages[0] === 'Detta värdepapper går endast att sälja.'){
+            await cache.add('ignoreList', {
+                id: buyTarget.id,
+                end: add(new Date(), {
+                    years: 1,
+                }),
+            });
+        }
+        
+        return false;
+    }
+    
+    if(orderResponse.status === 'SUCCESS'){
         try {
             await notifyy.send( {
                 message: '```' + JSON.stringify(order, null, 4) + '```',
@@ -89,6 +91,8 @@ module.exports = async function buyer(accountId, sellThreshold, buyTarget = fals
             console.error(notifyyError);
         }
     }
+    
+    console.log(JSON.stringify(orderResponse, null, 4));
     
     return true;
 };
