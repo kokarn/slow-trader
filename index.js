@@ -9,7 +9,7 @@ const avanzaProxy = require('./modules/avanza-proxy');
 
 const strategies = require('./strategies.json');
 
-const MIN_RUN_INTERVAL = 15000;
+const MIN_RUN_INTERVAL = 20000;
 const START_CRON_STRING = '55 8 * * Monday,Tuesday,Wednesday,Thursday,Friday';
 const STOP_CRON_STRING = '35 17 * * Monday,Tuesday,Wednesday,Thursday,Friday';
 
