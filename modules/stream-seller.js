@@ -34,14 +34,14 @@ module.exports = async function seller(accountId, sellThreshold, instrumentId, i
         return false;
     }
     
-    const streamId = streamProxy.add(instrumentId, async (quoteUpdate) => {
-        if(!quoteUpdate.sellPrice){
+    const streamId = streamProxy.add(instrumentId, async (tradeUpdate) => {
+        if(!tradeUpdate.price){
             console.log(`No sell price for ${instrumentName}, exchange is probably closed`);
             
             return false;
         }
         
-        const profitPercent = quoteUpdate.sellPrice / instrumentOwnership.averageAcquiredPrice * 100 - 100;
+        const profitPercent = tradeUpdate.price / instrumentOwnership.averageAcquiredPrice * 100 - 100;
         
         if(profitPercent < sellThreshold){
             if(profitPercent < 0){
@@ -59,7 +59,7 @@ module.exports = async function seller(accountId, sellThreshold, instrumentId, i
             accountId: accountId,
             orderbookId: instrumentOwnership.orderbookId,
             orderType: Avanza.SELL,
-            price: quoteUpdate.sellPrice,
+            price: tradeUpdate.price,
             validUntil: format(startOfTomorrow(), 'yyyy-MM-dd'),
             volume: instrumentOwnership.volume,
         };
