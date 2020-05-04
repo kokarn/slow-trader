@@ -14,11 +14,10 @@ const notifyy = new Notifyy( {
     users: 'QBfmptGTgQoOS2gGOobd5Olfp31hTKrG',
 } );
 
-const MIN_PROFIT_PERCENT = process.env.SELL_THRESHOLD_PERCENT;
 const BUY_TIMEOUT_MINUTES = 5;
 
-module.exports = async function seller(accountId, instrumentId, instrumentName){
-    console.log(`Setting up seller for ${instrumentName} with a target of ${MIN_PROFIT_PERCENT}% profit`);
+module.exports = async function seller(accountId, sellThreshold, instrumentId, instrumentName){
+    console.log(`Setting up seller for ${instrumentName} with a target of ${sellThreshold}% profit`);
     
     let instrumentOwnership;
     try {
@@ -44,11 +43,11 @@ module.exports = async function seller(accountId, instrumentId, instrumentName){
         
         const profitPercent = quoteUpdate.sellPrice / instrumentOwnership.averageAcquiredPrice * 100 - 100;
         
-        if(profitPercent < MIN_PROFIT_PERCENT){
+        if(profitPercent < sellThreshold){
             if(profitPercent < 0){
-                console.log(`Profit currently at ${chalk.red(+profitPercent.toFixed(2))}% for ${instrumentName} which is lower than ${MIN_PROFIT_PERCENT}%, not selling right now`);
+                console.log(`Profit currently at ${chalk.red(+profitPercent.toFixed(2))}% for ${instrumentName} which is lower than ${sellThreshold}%, not selling right now`);
             } else {
-                console.log(`Profit currently at ${chalk.yellow(+profitPercent.toFixed(2))}% for ${instrumentName} which is lower than ${MIN_PROFIT_PERCENT}%, not selling right now`);
+                console.log(`Profit currently at ${chalk.yellow(+profitPercent.toFixed(2))}% for ${instrumentName} which is lower than ${sellThreshold}%, not selling right now`);
             }
             
             return false;

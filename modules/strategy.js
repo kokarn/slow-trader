@@ -41,7 +41,7 @@ class Strategy {
             
             if(dealEvent.deals[0].orderType === 'Köp'){
                 // We've bought something, let's sell it
-                streamSeller(this.accountId, dealEvent.deals[0].orderbook.id, dealEvent.deals[0].orderbook.name);
+                streamSeller(this.accountId, this.sellThreshold, dealEvent.deals[0].orderbook.id, dealEvent.deals[0].orderbook.name);
             }
         });
         
@@ -67,7 +67,7 @@ class Strategy {
                 continue;
             }
             
-            streamSeller(this.accountId, position.orderbookId, position.name);
+            streamSeller(this.accountId, this.sellThreshold, position.orderbookId, position.name);
         }
     }
     
