@@ -100,6 +100,12 @@ class WinnersIndicator extends EventEmitter {
         
         for(const winner of winners){
             if(!dataCopy[winner.id]){
+                dataCopy[winner.id] = {
+                    ...winner,
+                    added: new Date(),
+                    onList: true,
+                };
+                
                 continue;
             }
             
@@ -124,6 +130,8 @@ class WinnersIndicator extends EventEmitter {
         
         for(const instrumentId in dataCopy){
             if(dataCopy[instrumentId].onList){
+                dataCopy[instrumentId].onList = false;
+                
                 continue;
             }
             
