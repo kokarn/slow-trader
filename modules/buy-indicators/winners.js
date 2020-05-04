@@ -84,6 +84,7 @@ class WinnersIndicator extends EventEmitter {
     async updateData(){
         let winners = false;
         const todayString = format(new Date(), 'yyyy-MM-dd');
+        console.log(`Upading winner data`);
         
         try {
             winners = await this.getWinners();
@@ -127,10 +128,12 @@ class WinnersIndicator extends EventEmitter {
             }
             
             Reflect.deleteProperty(dataCopy, instrumentId);
+            console.log(`Removing ${instrumentId} from winners`);
             
             if(this.buyOrderCache[todayString].indexOf(instrumentId) === -1){
                 continue;
             }
+            
             this.buyOrderCache[todayString].splice(this.buyOrderCache[todayString].indexOf(instrumentId), 1);
         }
         
