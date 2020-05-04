@@ -97,7 +97,7 @@ module.exports = async function targetFinder(accountId){
             }
             
             if(isAfter(new Date(), new Date(ignore.end))){
-                delete ignoreList[i];
+                ignoreList[i].splice(i, 1);
                 await cache.set('ignoreList', ignoreList);
                 
                 console.log(`Ignorelist have run out, we're good`);
