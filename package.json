@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "node -r dotenv/config index.js",
+    "dev": "node --trace-warnings -r dotenv/config index.js",
     "build": "docker build -t harbor.stendahls.dev/oskar-risberg/slow-trader:latest .",
     "postbuild": "docker push harbor.stendahls.dev/oskar-risberg/slow-trader:latest",
     "deploy": "kubectl rollout restart -n oskar-risberg deployment.apps/slow-trader"
