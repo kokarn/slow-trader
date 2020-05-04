@@ -8,7 +8,7 @@ const handlers = {};
 const paused = {};
 
 const create = function create(instrumentId){    
-    avanzaProxy.subscribe(Avanza.QUOTES, instrumentId, (quoteUpdate) => {
+    avanzaProxy.subscribe(Avanza.TRADES, instrumentId, (quoteUpdate) => {
         for(const handlerId in handlers[instrumentId]){
             if(paused[instrumentId]?.[handlerId]){
                 continue;
