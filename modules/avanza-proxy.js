@@ -8,7 +8,7 @@ const avanza = new Avanza();
 
 const cache = {};
 
-const MIN_ORDER_DEPTH = 10000;
+const MIN_OWNERS = 2500;
 
 const updateCache = function updateCache(cacheKey, property, newValue){
     if(!cache[cacheKey]){
@@ -143,16 +143,9 @@ module.exports = {
             }
             
             const instrumentData = await getInstrument(Avanza.STOCK, order.orderbookId);
-            let totalBuy = 0;
-            let totalSell = 0;
             
-            for(const orderDepth of instrumentData.orderDepthLevels){
-                totalBuy = totalBuy + orderDepth.buy.volume;
-                totalSell = totalSell + orderDepth.sell.volume;
-            }
-            
-            if(totalBuy + totalSell < MIN_ORDER_DEPTH){
-                console.log(`Not buying ${order.orderbookId} as total order depth < ${MIN_ORDER_DEPTH}`);
+            if(instrumentData.numberOfOwners < MIN_OWNERS){
+                console.log(`Not buying ${order.orderbookId} as total order owners ${instrumentData.numberOfOwners} < ${MIN_OWNERS}`);
                 
                 return false;
             }
