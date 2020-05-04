@@ -8,35 +8,40 @@ const avanza = new Avanza();
 
 const cache = {};
 
-const updateCache = function updateCache(method, property, newValue){
-    if(!cache[method]){
+const updateCache = function updateCache(cacheKey, property, newValue){
+    if(!cache[cacheKey]){
         return false;
     }
     
-    if(!cache[method][property]){
+    if(!cache[cacheKey][property]){
         return false;
     }
     
-    cache[method][property] = newValue;
+    cache[cacheKey][property] = newValue;
     
     return true;
 };
 
 const getMethodData = async function getMethodData(method, ...someArgs) {
-    if(cache[method] && !someArgs){
-        if(isBefore(new Date(), cache[method].expires)){
-            return cache[method].data;
+    let cacheKey = method;
+    if(someArgs){
+        cacheKey = `${method}-${JSON.stringify(someArgs)}`;
+    }
+    
+    if(cache[cacheKey]){
+        if(isBefore(new Date(), cache[cacheKey].expires)){
+            return cache[cacheKey].data;
         }
         
-        Reflect.deleteProperty(cache, method);
+        Reflect.deleteProperty(cache, cacheKey);
     }
     
     let responseData;
     try {
         if(someArgs){
-            responseData = await avanza[method](...someArgs);
+            responseData = await avanza[cacheKey](...someArgs);
         } else {
-            responseData = await avanza[method]();
+            responseData = await avanza[cacheKey]();
         }
     } catch (requestError){
         console.error(requestError);
@@ -45,7 +50,7 @@ const getMethodData = async function getMethodData(method, ...someArgs) {
     }
     
     if(!someArgs){
-        cache[method] = {
+        cache[cacheKey] = {
             data: responseData,
             expires: add(new Date(), {
                 seconds: 30,
@@ -97,6 +102,7 @@ module.exports = {
         
         if(order.orderType === Avanza.BUY){
             const orderCost = order.volume * order.price;
+            const cacheKey = `getAccountOverview-${order.accountId}`;
             
             if(!order.sellThreshold){
                 console.log(`Buy order without a sell threshold isn't allowed, not doing that`);
@@ -123,13 +129,13 @@ module.exports = {
                 return false;
             }
             
-            if(cache['getPositions'] && cache['getPositions'].totalBuyingPower < order.volume * order.price){
-                console.error(`Can't buy ${order.volume} of ${order.orderbookId} for ${order.price} as buyingPower is only ${cache['getPositions'].totalBuyingPower}`);
+            if(cache[cacheKey] && cache[cacheKey].buyingPower < order.volume * order.price){
+                console.error(`Can't buy ${order.volume} of ${order.orderbookId} for ${order.price} as buyingPower is only ${cache[cacheKey].buyingPower}`);
                 
                 return false;
             }
             
-            updateCache('getPositions', 'totalBuyingPower', cache['getPositions']?.totalBuyingPower - order.volume * order.price);
+            updateCache(cacheKey, 'buyingPower', cache[cacheKey]?.buyingPower - order.volume * order.price);
         }
         
         console.log(order);
