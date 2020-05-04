@@ -8,6 +8,8 @@ const avanza = new Avanza();
 
 const cache = {};
 
+const MIN_ORDER_DEPTH = 10000;
+
 const updateCache = function updateCache(cacheKey, property, newValue){
     if(!cache[cacheKey]){
         return false;
@@ -65,6 +67,10 @@ const getAccountOverview = async function getAccountOverview(accountId) {
     return getMethodData('getAccountOverview', accountId);
 };
 
+const getInstrument = async function getInstrument(instrumentType, instrumentId) {
+    return getMethodData('getInstrument', instrumentType, instrumentId);
+};
+
 module.exports = {
     connect: async () => {
         try {
@@ -93,6 +99,7 @@ module.exports = {
     getInspirationList: async (inspoId) => {
         return getMethodData('getInspirationList', inspoId);
     },
+    getInstrument: getInstrument,
     placeOrder: async (order) => {
         if(!order.volume || order.volume <= 0){
             console.log(`Order with 0 volume is invalid, let's not do that`);
@@ -135,6 +142,21 @@ module.exports = {
                 return false;
             }
             
+            const instrumentData = await getInstrument(Avanza.STOCK, order.orderbookId);
+            let totalBuy = 0;
+            let totalSell = 0;
+            
+            for(const orderDepth of instrumentData.orderDepthLevels){
+                totalBuy = totalBuy + orderDepth.buy.volume;
+                totalSell = totalSell + orderDepth.sell.volume;
+            }
+            
+            if(totalBuy + totalSell < MIN_ORDER_DEPTH){
+                console.log(`Not buying ${order.orderbookId} as total order depth < ${MIN_ORDER_DEPTH}`);
+                
+                return false;
+            }
+            
             updateCache(cacheKey, 'buyingPower', cache[cacheKey]?.buyingPower - order.volume * order.price);
         }
         
@@ -149,6 +171,7 @@ module.exports = {
         }
     },
     subscribe: (channel, filter, callback) => {
+        console.log(`Subscribing to ${channel} with ${filter}`);
         avanza.subscribe(channel, filter, callback);
     },
 };
