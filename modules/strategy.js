@@ -34,6 +34,8 @@ class Strategy {
             accountsIds.push(account.accountId);
         }
         
+        accountsIds.sort();
+        
         console.log('Setting up subscription for deals');
         avanzaProxy.subscribe(Avanza.DEALS, `_${accountsIds.join(',')}`, (dealEvent) => {
             console.log('Got a deal event');

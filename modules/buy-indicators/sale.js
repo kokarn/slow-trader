@@ -28,6 +28,8 @@ class SaleIndicator extends EventEmitter {
             accountsIds.push(account.accountId);
         }
         
+        accountsIds.sort();
+        
         console.log('Setting up subscription for deals');
         avanzaProxy.subscribe(Avanza.DEALS, `_${accountsIds.join(',')}`, (dealEvent) => {
             if(dealEvent.deals[0].orderType === 'Sälj'){
