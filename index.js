@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const cron = require('node-cron');
+const CronJob = require('cron').CronJob;
 const swedishHoliday = require('swedish-holidays');
 
 const cache = require('./modules/cache');
@@ -10,18 +10,8 @@ const avanzaProxy = require('./modules/avanza-proxy');
 const strategies = require('./strategies.json');
 
 const MIN_RUN_INTERVAL = 20000;
-const START_CRON_STRING = '55 8 * * Monday,Tuesday,Wednesday,Thursday,Friday';
-const STOP_CRON_STRING = '35 17 * * Monday,Tuesday,Wednesday,Thursday,Friday';
-
-if(!cron.validate(START_CRON_STRING)){
-    console.error(`"${START_CRON_STRING}" is not a valid cron string, exiting`);
-    process.exit(1);
-}
-
-if(!cron.validate(STOP_CRON_STRING)){
-    console.error(`"${STOP_CRON_STRING}" is not a valid cron string, exiting`);
-    process.exit(1);
-}
+const START_CRON_STRING = '55 8 * * Mon,Tue,Wed,Thu,Fri';
+const STOP_CRON_STRING = '35 17 * * Mon,Tue,Wed,Thu,Fri';
 
 let currentStrategies = [];
 
@@ -67,25 +57,31 @@ const stop = function stop(){
         start(); 
     }
 
-    cron.schedule(START_CRON_STRING, () => {
-        if(swedishHoliday.isHoliday()){
-            // Don't start on holidays
+    const openJob = new CronJob(
+        START_CRON_STRING, 
+        () => {
+            if(swedishHoliday.isHoliday()){
+                // Don't start on holidays
+                
+                return false;
+            }
             
-            return false;
-        }
-        
-        start();
-    },
-    {
-        timezone: 'Europe/Stockholm',
-    });
+            start();
+        },
+        null,
+        true,
+        'Europe/Stockholm'
+    );
     
-    cron.schedule(STOP_CRON_STRING, () => {
-        stop();
-    },
-    {
-        timezone: 'Europe/Stockholm',
-    });
+    const closeJob = new CronJob(
+        STOP_CRON_STRING, 
+        () => {
+            stop();
+        },
+        null,
+        true,
+        'Europe/Stockholm'
+    );
 })();
 
 process.on('SIGINT', () => {
