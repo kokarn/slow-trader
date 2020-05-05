@@ -7,13 +7,13 @@ const swedishHoliday = require('swedish-holidays');
 module.exports = () => {
     const now = new Date();
     const open = set(new Date(), {
-        hours: 7,
+        hours: 9,
         minutes: 0,
         seconds: 0,
         milliseconds: 0,
     });
     const close = set(new Date(), {
-        hours: 15,
+        hours: 17,
         minutes: 30,
         seconds: 0,
         milliseconds: 0,
