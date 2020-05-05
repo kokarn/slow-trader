@@ -4,12 +4,12 @@ const got = require('got');
 const cheerio = require('cheerio');
 const format = require('date-fns/format');
 const sub = require('date-fns/sub');
-const addMinutes = require('date-fns/addMinutes');
+const addSeconds = require('date-fns/addSeconds');
 const isBefore = require('date-fns/isBefore');
 
-const DATA_URL = 'https://www.avanza.se/aktier/vinnare-forlorare.html';
-const MIN_TIME_ON_LIST_MINUTES = 3;
-const CHECK_INTERVAL_MS = 30000;
+const DATA_URL = 'https://www.avanza.se/aktier/vinnare-forlorare.html?countryCode=SE&marketPlaceCodes=XSTO&timeUnit=TODAY';
+const MIN_TIME_ON_LIST_SECONDS = 45;
+const CHECK_INTERVAL_MS = 20000;
 
 class WinnersIndicator extends EventEmitter {
     constructor(){
@@ -121,7 +121,7 @@ class WinnersIndicator extends EventEmitter {
                 continue;
             }
             
-            if(isBefore(new Date(), addMinutes(winner.added, MIN_TIME_ON_LIST_MINUTES))){
+            if(isBefore(new Date(), addSeconds(winner.added, MIN_TIME_ON_LIST_SECONDS))){
                 // console.log(`New item hasn't been long enough on the list, not buying yet`);
                 
                 continue;
