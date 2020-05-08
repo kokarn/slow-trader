@@ -53,7 +53,7 @@ module.exports = async function seller(accountId, sellThreshold, instrumentId, i
             return false;
         }
         
-        console.log(chalk.green(`Should sell ${instrumentName}, profit at ${chalk.green(+profitPercent.toFixed(2))}%`));
+        console.log(`Profit currently at ${chalk.green(+profitPercent.toFixed(2))}% for ${instrumentName} which is higher than ${sellThreshold}%, selling right now`);
         
         const order = {
             accountId: accountId,
