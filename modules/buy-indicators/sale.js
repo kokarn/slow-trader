@@ -37,6 +37,10 @@ class SaleIndicator extends EventEmitter {
             }
         });
     }
+    
+    stop(){
+        return true;
+    }
 }
 
 module.exports = SaleIndicator;

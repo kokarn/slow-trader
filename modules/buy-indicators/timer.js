@@ -16,6 +16,12 @@ class TimerIndicator extends EventEmitter {
             this.emit('buy');
         }, 290000);
     }
+    
+    stop(){
+        clearInterval(this.buyInterval);
+        
+        return true;
+    }
 }
 
 module.exports = TimerIndicator;

@@ -19,6 +19,7 @@ class WinnersIndicator extends EventEmitter {
         this.buyOrderCache = {};
         
         this.setup();
+        this.timer = false;
     }
 
     async getWinners (){
@@ -78,7 +79,13 @@ class WinnersIndicator extends EventEmitter {
             this.buyOrderCache[todayString].push(winner.id);
         }
         
-        setInterval(this.updateData.bind(this), CHECK_INTERVAL_MS);
+        this.timer = setInterval(this.updateData.bind(this), CHECK_INTERVAL_MS);
+    }
+    
+    stop(){
+        clearInterval(this.timer);
+        
+        return true;
     }
     
     async updateData(){

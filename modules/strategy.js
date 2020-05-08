@@ -81,6 +81,7 @@ class Strategy {
         console.log(`Stopping strategy ${this.name}`);
         for(const indicator of this.initiatedIndicators){
             indicator.removeListener('buy', this.buyEventHandler);
+            indicator.stop();
         }
         
         streamProxy.clear();
