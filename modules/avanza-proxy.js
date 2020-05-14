@@ -109,7 +109,7 @@ module.exports = {
         
         if(order.orderType === Avanza.BUY){
             const orderCost = order.volume * order.price;
-            const cacheKey = `getAccountOverview-${order.accountId}`;
+            const accountOverviewCacheKey = `getAccountOverview-["${order.accountId}"]`;
             
             if(!order.sellThreshold){
                 console.log(`Buy order without a sell threshold isn't allowed, not doing that`);
@@ -136,8 +136,8 @@ module.exports = {
                 return false;
             }
             
-            if(cache[cacheKey] && cache[cacheKey].buyingPower < order.volume * order.price){
-                console.error(`Can't buy ${order.volume} of ${order.orderbookId} for ${order.price} as buyingPower is only ${cache[cacheKey].buyingPower}`);
+            if(cache[accountOverviewCacheKey] && cache[accountOverviewCacheKey].buyingPower < order.volume * order.price){
+                console.error(`Can't buy ${order.volume} of ${order.orderbookId} for ${order.price} as buyingPower is only ${cache[accountOverviewCacheKey].buyingPower}`);
                 
                 return false;
             }
@@ -150,7 +150,7 @@ module.exports = {
                 return false;
             }
             
-            updateCache(cacheKey, 'buyingPower', cache[cacheKey]?.buyingPower - order.volume * order.price);
+            updateCache(accountOverviewCacheKey, 'buyingPower', cache[accountOverviewCacheKey]?.buyingPower - order.volume * order.price);
         }
         
         console.log(order);
