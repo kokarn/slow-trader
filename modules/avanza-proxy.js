@@ -136,16 +136,17 @@ module.exports = {
                 return false;
             }
             
-            if(cache[accountOverviewCacheKey] && cache[accountOverviewCacheKey].buyingPower < order.volume * order.price){
-                console.error(`Can't buy ${order.volume} of ${order.orderbookId} for ${order.price} as buyingPower is only ${cache[accountOverviewCacheKey].buyingPower}`);
-                
-                return false;
-            }
-            
             const instrumentData = await getInstrument(Avanza.STOCK, order.orderbookId);
             
             if(instrumentData.numberOfOwners < MIN_OWNERS){
                 console.log(`Not buying ${order.orderbookId} as total order owners ${instrumentData.numberOfOwners} < ${MIN_OWNERS}`);
+                
+                return false;
+            }
+            
+            // This should be last to prevent race conditions
+            if(cache[accountOverviewCacheKey] && cache[accountOverviewCacheKey].buyingPower < order.volume * order.price){
+                console.error(`Can't buy ${order.volume} of ${order.orderbookId} for ${order.price} as buyingPower is only ${cache[accountOverviewCacheKey].buyingPower}`);
                 
                 return false;
             }
