@@ -1,7 +1,7 @@
 const Avanza = require('avanza');
 const Notifyy = require('node-notifyy');
 const chalk = require('chalk');
-const startOfTomorrow = require('date-fns/startOfTomorrow');
+const endOfToday = require('date-fns/endOfToday');
 const format = require('date-fns/format');
 const add = require('date-fns/add');
 
@@ -47,7 +47,7 @@ module.exports = async function buyer(accountId, sellThreshold, buyTarget = fals
         orderbookId: buyTarget.id,
         orderType: Avanza.BUY,
         price: buyTarget.lastPrice,
-        validUntil: format(startOfTomorrow(), 'yyyy-MM-dd'),
+        validUntil: format(endOfToday(), 'yyyy-MM-dd'),
         volume: Math.floor(accountOverview.buyingPower / buyTarget.lastPrice),
         sellThreshold: sellThreshold,
     };
