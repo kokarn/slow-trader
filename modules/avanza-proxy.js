@@ -121,7 +121,7 @@ module.exports = {
             const courtage = getCourtage(accountOverview.courtageClass);
             
             if(!courtage){
-                console.error(`Unknown courtage class ${accountOverview.courtageClass}, can't buy post order`);
+                console.error(`Unknown courtage class ${accountOverview.courtageClass}, can't post buy order`);
                 
                 return false;
             }
