@@ -11,15 +11,15 @@ const cache = {};
 const MIN_OWNERS = 2500;
 
 const updateCache = function updateCache(cacheKey, property, newValue){
-    if(!cache[cacheKey]){
+    if(!cache[cacheKey].data){
         return false;
     }
     
-    if(!cache[cacheKey][property]){
+    if(!cache[cacheKey].data[property]){
         return false;
     }
     
-    cache[cacheKey][property] = newValue;
+    cache[cacheKey].data[property] = newValue;
     
     return true;
 };
@@ -51,14 +51,12 @@ const getMethodData = async function getMethodData(method, ...someArgs) {
         return false;
     }
     
-    if(!someArgs){
         cache[cacheKey] = {
             data: responseData,
             expires: add(new Date(), {
                 seconds: 30,
             }),
         };
-    }
     
     return responseData;
 };
@@ -145,13 +143,13 @@ module.exports = {
             }
             
             // This should be last to prevent race conditions
-            if(cache[accountOverviewCacheKey] && cache[accountOverviewCacheKey].buyingPower < order.volume * order.price){
-                console.error(`Can't buy ${order.volume} of ${order.orderbookId} for ${order.price} as buyingPower is only ${cache[accountOverviewCacheKey].buyingPower}`);
+            if(cache[accountOverviewCacheKey]?.data.buyingPower < order.volume * order.price){
+                console.error(`Can't buy ${order.volume} of ${order.orderbookId} for ${order.price} as buyingPower is only ${cache[accountOverviewCacheKey].data.buyingPower}`);
                 
                 return false;
             }
             
-            updateCache(accountOverviewCacheKey, 'buyingPower', cache[accountOverviewCacheKey]?.buyingPower - order.volume * order.price);
+            updateCache(accountOverviewCacheKey, 'buyingPower', cache[accountOverviewCacheKey]?.data.buyingPower - order.volume * order.price);
         }
         
         console.log(order);
