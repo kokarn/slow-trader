@@ -15,6 +15,7 @@ const notifyy = new Notifyy( {
 } );
 
 const BUY_TIMEOUT_MINUTES = 5;
+const RETRY_TIMEOUT = 30000;
 
 module.exports = async function seller(accountId, sellThreshold, instrumentId, instrumentName){
     console.log(`Setting up seller for ${instrumentName} with a target of ${sellThreshold}% profit`);
@@ -29,7 +30,10 @@ module.exports = async function seller(accountId, sellThreshold, instrumentId, i
     }
     
     if(!instrumentOwnership){
-        console.error(`Tried to set up a seller for ${instrumentName} on account ${accountId} but couldn't find any, not doing that`);
+        console.error(`Found no ${instrumentName} on account ${accountId}, stopping seller setup`);
+        console.log(`Trying again in ${RETRY_TIMEOUT}ms`);
+        
+        setTimeout(seller.bind(this, accountId, sellThreshold, instrumentId, instrumentName), RETRY_TIMEOUT);
         
         return false;
     }
