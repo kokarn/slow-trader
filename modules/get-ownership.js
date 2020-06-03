@@ -3,7 +3,9 @@ const avanzaProxy = require('./avanza-proxy');
 module.exports = async function seller(accountId, instrumentId){
     let positions;
     try {
-        positions = await avanzaProxy.getPositions();
+        positions = await avanzaProxy.getPositions({
+            skipCache: true,
+        });
     } catch (overviewError){
         console.error(overviewError);
         

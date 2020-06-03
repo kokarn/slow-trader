@@ -24,20 +24,7 @@ const updateCache = function updateCache(cacheKey, property, newValue){
     return true;
 };
 
-const getMethodData = async function getMethodData(method, ...someArgs) {
-    let cacheKey = method;
-    if(someArgs){
-        cacheKey = `${method}-${JSON.stringify(someArgs)}`;
-    }
-    
-    if(cache[cacheKey]){
-        if(isBefore(new Date(), cache[cacheKey].expires)){
-            return cache[cacheKey].data;
-        }
-        
-        Reflect.deleteProperty(cache, cacheKey);
-    }
-    
+const getMethodData = async function getMethodData(method, ...someArgs){
     let responseData;
     try {
         if(someArgs){
@@ -51,22 +38,41 @@ const getMethodData = async function getMethodData(method, ...someArgs) {
         return false;
     }
     
-        cache[cacheKey] = {
-            data: responseData,
-            expires: add(new Date(), {
-                seconds: 30,
-            }),
-        };
+    return responseData;
+}
+
+const getData = async function getData(method, ...someArgs) {
+    let cacheKey = method;
+    if(someArgs){
+        cacheKey = `${method}-${JSON.stringify(someArgs)}`;
+    }
+    
+    if(cache[cacheKey]){
+        if(isBefore(new Date(), cache[cacheKey].expires)){
+            return cache[cacheKey].data;
+        }
+        
+        Reflect.deleteProperty(cache, cacheKey);
+    }
+    
+    responseData = await getMethodData(method, ...someArgs);
+    
+    cache[cacheKey] = {
+        data: responseData,
+        expires: add(new Date(), {
+            seconds: 30,
+        }),
+    };
     
     return responseData;
 };
 
 const getAccountOverview = async function getAccountOverview(accountId) {
-    return getMethodData('getAccountOverview', accountId);
+    return getData('getAccountOverview', accountId);
 };
 
 const getInstrument = async function getInstrument(instrumentType, instrumentId) {
-    return getMethodData('getInstrument', instrumentType, instrumentId);
+    return getData('getInstrument', instrumentType, instrumentId);
 };
 
 module.exports = {
@@ -87,15 +93,18 @@ module.exports = {
         avanza.disconnect();
     },
     
-    getPositions: async () => {
-        return getMethodData('getPositions');
+    getPositions: async (options) => {
+        if(options?.skipCache){
+            return getMethodData('getPositions');
+        }
+        return getData('getPositions');
     },    
     getOverview: async () => {
-        return getMethodData('getOverview');
+        return getData('getOverview');
     },    
     getAccountOverview: getAccountOverview,
     getInspirationList: async (inspoId) => {
-        return getMethodData('getInspirationList', inspoId);
+        return getData('getInspirationList', inspoId);
     },
     getInstrument: getInstrument,
     placeOrder: async (order) => {
