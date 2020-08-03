@@ -11,7 +11,7 @@ const streamProxy = require('./stream-proxy');
 const avanzaProxy = require('./avanza-proxy');
 
 const notifyy = new Notifyy( {
-    users: 'QBfmptGTgQoOS2gGOobd5Olfp31hTKrG',
+    users: process.env.NOTIFYY_USERS,
 } );
 
 const BUY_TIMEOUT_MINUTES = 5;
