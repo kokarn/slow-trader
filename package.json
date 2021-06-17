@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "node --trace-warnings -r dotenv/config index.js",
+    "dev": "node --trace-warnings index.js",
     "build": "docker build -t harbor.stendahls.dev/oskar-risberg/slow-trader:latest .",
     "postbuild": "docker push harbor.stendahls.dev/oskar-risberg/slow-trader:latest",
     "deploy": "kubectl rollout restart -n oskar-risberg deployment.apps/slow-trader"
@@ -20,10 +20,9 @@
     "cheerio": "^1.0.0-rc.3",
     "cron": "^1.8.2",
     "date-fns": "^2.12.0",
-    "dotenv": "^8.2.0",
     "got": "^11.0.2",
     "node-notifyy": "^3.1.0",
-    "swedish-holidays": "^0.1.5",
+    "swedish-holidays": "^1.0.2",
     "uuid": "^7.0.3"
   }
 }
