@@ -1,7 +1,11 @@
 const LEVELS = {
+    // START: {
+    //     mininumCost: 0,
+    //     feePercent: 0,
+    // },
     START: {
-        mininumCost: 0,
-        feePercent: 0,
+        mininumCost: 1,
+        feePercent: 0.25,
     },
     MINI: {
         mininumCost: 1,
