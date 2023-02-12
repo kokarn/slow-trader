@@ -20,7 +20,7 @@
     "cheerio": "^1.0.0-rc.3",
     "cron": "^1.8.2",
     "date-fns": "^2.12.0",
-    "got": "^11.0.2",
+    "got": "^12.5.3",
     "node-notifyy": "^3.1.0",
     "swedish-holidays": "^1.0.2",
     "uuid": "^7.0.3"
